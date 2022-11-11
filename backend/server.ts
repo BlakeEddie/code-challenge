@@ -23,38 +23,30 @@ io.on('connection', (socket) => {
   const username = socket.handshake.auth.username
   if (!username) {
     //would be overhauled with proper error callbacks on the client side to re login etc but from spec doing it dirty
-    console.log("drop connection no username provided");
+    console.info("drop connection no username provided");
     return;
   }
-  console.log(`new connection from socket ID: ${socket.id} with username: ${username}`);
+  console.info(`new connection from socket ID: ${socket.id} with username: ${username}`);
   if (uuuidToSocketid[username]) {
-    console.log('this is a reconnection');
+    console.info('this is a reconnection');
   }
-
-  uuuidToSocketid[username] = socket.id
-  socket.on('directMessageConnect',  ({ to }) => {
-    console.log(`start new chat with ${uuuidToSocketid[to]}`);
-    socket.to(uuuidToSocketid[to]).emit("directMessageConnect", {
-      username: username
-    });
-  });
 
   //leaving the option for group messaging later
   socket.on('directMessage', ({ content, to }) => {
     //this would not be acceptable in a real app that wants secure direct messages 
     //but the messages would be p2p encypted
-    console.log(`message recived from : ${username}, message: ${content}, to: ${to}`)
+    console.info(`message recived from : ${username}, message: ${content}, to: ${to}`)
     socket.to(uuuidToSocketid[to]).emit('directMessage', {
       content,
       from: socket.id,
       username: username
     });
-    console.log('message sent')
+    console.info('message sent')
   });
 
   socket.on('disconnect', () => {
     //remove user from the users store
-    console.log(`user disconected with name ${username}`);
+    console.info(`user disconected with name ${username}`);
     socket.broadcast.emit('userDisconected' , {
       username: username
     });
@@ -63,5 +55,5 @@ io.on('connection', (socket) => {
 });
 
 httpServer.listen(CONFIG.PORT, () => {
-  console.log(`Server listening on *:${CONFIG.PORT} 🚀`);
+  console.info(`Server listening on *:${CONFIG.PORT} 🚀`);
 });

@@ -1,6 +1,4 @@
-import { Layout } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import ChatHistory from '../../Components/ChatHistory';
@@ -29,11 +27,13 @@ function Chat({ socket }: ChatProps) {
     });
   }, [socket, messages]);
   return (
-    <Content className="content chat">
-      <h3>Your chat with {userId}</h3>
+    <div className="content chat">
+      <h3>
+        Your chat with <strong> {userId} </strong>
+      </h3>
       <ChatHistory socket={socket} messages={messages} />
       <MessageSender socket={socket} setMessages={setMessages} messages={messages} />
-    </Content>
+    </div>
   );
 }
 
