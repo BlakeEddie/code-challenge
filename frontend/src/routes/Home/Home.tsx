@@ -10,13 +10,12 @@ type HomeProps = {
   username: string
 };
 
-function Home({username, socket}: HomeProps) {
+function Home({username}: HomeProps) {
   const [userTo, setUserTo] = useState('');
   const navigate = useNavigate();
 
   //outa spec but was quicker than passing the message around
   function startChatWith(userID:string) {
-    socket.emit('directMessageConnect', { to: userID });
     navigate(`/chat/${userID}`);
   }
 

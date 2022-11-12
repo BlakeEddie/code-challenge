@@ -30,15 +30,17 @@ io.on('connection', (socket) => {
   if (uuuidToSocketid[username]) {
     console.info('this is a reconnection');
   }
+  uuuidToSocketid[username] = socket.id;
+
 
   //leaving the option for group messaging later
   socket.on('directMessage', ({ content, to }) => {
     //this would not be acceptable in a real app that wants secure direct messages 
     //but the messages would be p2p encypted
-    console.info(`message recived from : ${username}, message: ${content}, to: ${to}`)
+    console.info(`message recived from : ${username}, message: ${content}, to: ${to}`);
+    console.log(uuuidToSocketid);
     socket.to(uuuidToSocketid[to]).emit('directMessage', {
       content,
-      from: socket.id,
       username: username
     });
     console.info('message sent')
@@ -47,6 +49,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     //remove user from the users store
     console.info(`user disconected with name ${username}`);
+    //for a proper system have only friends/connected users recive this message
     socket.broadcast.emit('userDisconected' , {
       username: username
     });

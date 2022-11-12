@@ -16,10 +16,10 @@ function Chat({ socket }: ChatProps) {
 
   useEffect(() => {
     socket.on('directMessage', ({ content, username }) => {
+      console.log('mesage');
       setMessages([...messages, { content: content, username: username }]);
     });
 
-    //wouldnt boradcast this in a production system would only send to friends/active connections
     socket.on('userDisconected', ({ username }) => {
       if (username == userId) {
         navigate('/');
