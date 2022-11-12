@@ -1,4 +1,5 @@
-import React from 'react';
+import { useContext } from 'react';
+import SocketioContext from '../../context/SocketioContext';
 import { MessageType } from '../../types';
 
 type MessageProps = {
@@ -8,7 +9,8 @@ type MessageProps = {
 
 // Can use the username later for colouring depending on self or other source of message
 function Message({ message }: MessageProps) {
-  const self = message.username == localStorage.getItem('username') ? 'self' : '';
+  const { username } = useContext(SocketioContext).SocketState;
+  const self = message.username == username ? 'self' : '';
   const classidentifier = `message ${self}`;
   return <p className={classidentifier}>{message.content}</p>;
 }

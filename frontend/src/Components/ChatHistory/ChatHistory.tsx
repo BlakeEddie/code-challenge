@@ -1,15 +1,11 @@
-import React from 'react';
-import { Socket } from 'socket.io-client';
-import { MessageType } from '../../types';
+import { useContext } from 'react';
+import SocketioContext from '../../context/SocketioContext';
 import Message from '../Message';
 
-type ChatHistoryProps = {
-  socket: Socket;
-  messages: MessageType[];
-};
-
 //add auto scroll
-function ChatHistory({ messages }: ChatHistoryProps) {
+function ChatHistory() {
+  const { messages } = useContext(SocketioContext).SocketState;
+  console.log(messages);
   return (
     <div className="message-history">
       {messages.map((message, index) => {

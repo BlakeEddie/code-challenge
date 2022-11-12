@@ -1,38 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
 import ChatHistory from '../../Components/ChatHistory';
 import MessageSender from '../../Components/MessageSender';
-import { MessageType } from '../../types';
+import SocketioContext from '../../context/SocketioContext';
 
-type ChatProps = {
-  socket: Socket;
-};
-
-function Chat({ socket }: ChatProps) {
+function Chat() {
+  const { partnerUsername } = useContext(SocketioContext).SocketState;
   const { userId } = useParams();
-  const [messages, setMessages] = useState<MessageType[]>([]);
   const navigate = useNavigate();
-
   useEffect(() => {
-    socket.on('directMessage', ({ content, username }) => {
-      console.log('mesage');
-      setMessages([...messages, { content: content, username: username }]);
-    });
+    console.log('partner name ', partnerUsername);
+    console.log('pageurl ', userId);
+    //if a third user messages one of the participants steals the page over
+    if (partnerUsername != '' && userId != partnerUsername) {
+      console.log('redirect to userpage');
+      navigate(`/chat/${partnerUsername}`);
+    }
 
-    socket.on('userDisconected', ({ username }) => {
-      if (username == userId) {
-        navigate('/');
-      }
-    });
-  }, [socket, messages]);
+    if (partnerUsername == '' && userId != undefined) {
+      console.log('redirect to homepage');
+      navigate('/');
+    }
+  }, [partnerUsername, userId]);
   return (
     <div className="content chat">
       <h3>
-        Your chat with <strong> {userId} </strong>
+        Your chat with <strong>{partnerUsername}</strong>
       </h3>
-      <ChatHistory socket={socket} messages={messages} />
-      <MessageSender socket={socket} setMessages={setMessages} messages={messages} />
+      <ChatHistory />
+      <MessageSender />
     </div>
   );
 }

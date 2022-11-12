@@ -1,29 +1,34 @@
 import { Button, Input, Space } from 'antd';
 import { useState } from 'react';
-import { Socket } from 'socket.io-client';
 import { useParams } from 'react-router-dom';
-import { MessageType } from '../../types';
-
-type MessageSenderProps = {
-  socket: Socket;
-  setMessages: (messageArray: MessageType[]) => void;
-  // this is worng it shouldnt have a need to have this passed to the sender, again context is simpler but my brain aint telling me how to fix this rn.
-  messages: MessageType[];
-};
+import { useContext } from 'react';
+import SocketioContext from '../../context/SocketioContext';
 
 // Look im no word smith
-function MessageSender({ socket, setMessages, messages }: MessageSenderProps) {
+function MessageSender() {
   const [content, setContent] = useState('');
   const { userId } = useParams();
-  const myUserId =
-    localStorage.getItem('username') || 'do some actual error checking but using sqllite with context would be simpler';
+  //move this into a standalone hook
+  const { SocketDispatch, SocketState } = useContext(SocketioContext);
 
-  const sendMessage = (content: string, socket: Socket) => {
-    socket.emit('directMessage', {
+  const sendMessage = (content: string) => {
+    // this is lazy
+    if (userId == undefined) {
+      return;
+    }
+    const messageToSend = {
       content,
       to: userId
-    });
-    setMessages([...messages, { content: content, username: myUserId }]);
+    };
+
+    // this is lazy
+    if (SocketState.socket == undefined) {
+      return;
+    }
+
+    SocketState.socket.emit('directMessage', messageToSend);
+    // this is also lazy, also a little confusing because we need to enroll that we sent the message should just have another reducer method
+    SocketDispatch({ type: 'directMessage', payload: { username: SocketState.username, content: content } });
     setContent('');
   };
 
@@ -31,7 +36,7 @@ function MessageSender({ socket, setMessages, messages }: MessageSenderProps) {
     <>
       <Space direction="vertical">
         <Input id="MessageBox" value={content} onChange={(e) => setContent(e.target.value)} />
-        <Button type="primary" onClick={() => sendMessage(content, socket)}>
+        <Button type="primary" onClick={() => sendMessage(content)}>
           Send Message
         </Button>
       </Space>

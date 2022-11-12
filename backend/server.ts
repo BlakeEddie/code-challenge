@@ -38,7 +38,6 @@ io.on('connection', (socket) => {
     //this would not be acceptable in a real app that wants secure direct messages 
     //but the messages would be p2p encypted
     console.info(`message recived from : ${username}, message: ${content}, to: ${to}`);
-    console.log(uuuidToSocketid);
     socket.to(uuuidToSocketid[to]).emit('directMessage', {
       content,
       username: username
