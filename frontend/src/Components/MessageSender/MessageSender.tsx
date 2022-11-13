@@ -12,8 +12,10 @@ function MessageSender() {
   const { SocketDispatch, SocketState } = useContext(SocketioContext);
 
   const sendMessage = (content: string) => {
+    console.log('send message from client');
     // this is lazy
     if (userId == undefined) {
+      setContent('');
       return;
     }
     const messageToSend = {
