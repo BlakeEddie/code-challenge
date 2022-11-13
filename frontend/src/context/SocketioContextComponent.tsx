@@ -35,6 +35,10 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     SocketDispatch({ type: 'setUsername', payload: username });
     console.log('Start Listners');
     StartListeners();
+    return () => {
+      //remove listners only really matters on hot reload from what I remember, would be able to put strict back likely
+      StopListeners();
+    };
   }, []);
 
   const StartListeners = () => {
@@ -48,6 +52,10 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       //bad should just allow null passing
       SocketDispatch({ type: 'userDisconected', payload: userDC.username });
     });
+  };
+  const StopListeners = () => {
+    socket.off('directMessage');
+    socket.off('userDisconected');
   };
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;

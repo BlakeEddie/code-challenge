@@ -22,7 +22,6 @@ function Home() {
 
   }, [SocketState.partnerUsername]);
 
-  //outa spec but was quicker than passing the message around
   function startChatWith(userID:string) {
     SocketDispatch({type: 'setPartner', payload: userID});
     navigate(`/chat/${userID}`);
